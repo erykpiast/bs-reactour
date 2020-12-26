@@ -3,48 +3,71 @@ open ExpectJs;
 
 Enzyme.configureEnzyme(Enzyme.react_16_adapter());
 
-let renderReason = (genericAction, genericCallback) =>
-  <div>
-    <Reactour
-      steps=Reactour.Steps.Step.[
-        {
-          selector: "#cta",
-          content: `element(<> {"Click this!" |> React.string} </>),
-          position: `right,
-          action: genericAction,
-          style: ReactDOMRe.Style.make(),
-          stepInteraction: true,
-          navDotAriaLabel: "",
-        },
-      ]
-      isOpen=true
-      onRequestClose=genericCallback
-    />
-  </div>
+let renderReason = (onRequestClose, steps) =>
+  <div> <Reactour steps isOpen=true onRequestClose /> </div>
   |> Enzyme.shallow
   |> Enzyme.Shallow.childAt(0);
 
 let renderJs = [%bs.raw
-  "(genericCallback) => React.createElement(require('reactour').default, {
-  steps: [{
-      selector: '#cta',
-      content: React.createElement(React.Fragment, undefined, 'Click this!'),
-      position: 'right',
-      action: genericCallback,
-      style: {},
-      stepInteraction: true,
-      navDotAriaLabel: '',
-    }],
+  "(onRequestClose, steps) => React.createElement(require('reactour').default, {
+  steps,
   isOpen: true,
-  onRequestClose: genericCallback
+  onRequestClose
 })"
 ];
 
 describe("Reactour", () => {
   test("output equal to direct JS rendering", () => {
-    let genericCallback = [%bs.raw "() => {}"];
-    let reasonComponent = renderReason(genericCallback, genericCallback);
-    let jsComponent = [%bs.raw "renderJs(genericCallback, genericCallback)"];
+    let onRequestClose = () => ();
+    let action = _ => ();
+    let renderStep = () => <div> {"Baz" |> React.string} </div>;
+
+    let reasonComponent =
+      renderReason(
+        onRequestClose,
+        [
+          Reactour.Steps.Step.{
+            selector: ".foobar",
+            content: `element(<div> {"Foobar" |> React.string} </div>),
+            position: `top,
+            action,
+            style: ReactDOMRe.Style.make(),
+            stepInteraction: true,
+            navDotAriaLabel: "",
+          },
+          Reactour.Steps.Step.{
+            selector: "#baz",
+            content: `func(renderStep),
+            position: `coords((1, 2)),
+            action,
+            style: ReactDOMRe.Style.make(~color="red", ()),
+            stepInteraction: false,
+            navDotAriaLabel: "the-label",
+          },
+        ],
+      );
+    let jsComponent = [%bs.raw
+      "renderJs(onRequestClose, [
+          {
+              selector: '.foobar',
+              content: React.createElement('div', {}, 'Foobar'),
+              position: 'top',
+              action,
+              style: {},
+              stepInteraction: true,
+              navDotAriaLabel: ''
+            },
+            {
+              selector: '#baz',
+              content: renderStep,
+              position: [1, 2],
+              action,
+              style: { color: 'red' },
+              stepInteraction: false,
+              navDotAriaLabel: 'the-label'
+            }
+        ])"
+    ];
 
     expect(Enzyme.Shallow.equals(jsComponent, reasonComponent))
     |> toBe(true);
