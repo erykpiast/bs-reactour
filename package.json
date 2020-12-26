@@ -1,0 +1,59 @@
+{
+  "name": "bs-reactour",
+  "version": "0.1.0",
+  "description": "ReasonML bindings for reactour library",
+  "main": "src/ReactDiffViewer.re",
+  "files": [
+    "src/*.re",
+    "src/*.ml",
+    "bsconfig.json"
+  ],
+  "scripts": {
+    "build": "bsb -make-world",
+    "clean": "bsb -clean-world",
+    "prepublish": "npm run clean && npm run build",
+    "pretest": "npm run build",
+    "start": "bsb -make-world -w",
+    "test": "TEST=true jest",
+    "release": "standard-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erykpiast/bs-reactour.git"
+  },
+  "keywords": [
+    "reasonml",
+    "bindings",
+    "reason-react",
+    "tour"
+  ],
+  "author": "Eryk Napierała",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/erykpiast/bs-reactour/issues"
+  },
+  "homepage": "https://github.com/erykpiast/bs-reactour#readme",
+  "peerDependencies": {
+    "react": "16.x.x",
+    "reactour": "1.x.x",
+    "react-dom": "16.x.x",
+    "reason-react": "0.8.x"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "7.10.4",
+    "@glennsl/bs-jest": "0.5.1",
+    "babel-jest": "26.1.0",
+    "bs-css": "12.2.0",
+    "bs-css-emotion": "1.2.0",
+    "bs-enzyme": "erykpiast/bs-enzyme#1b543e6",
+    "bs-platform": "7.3.2",
+    "enzyme-adapter-react-16": "1.15.2",
+    "jest": "26.1.0",
+    "react": "16.13.1",
+    "reactour": "1.18.0",
+    "react-dom": "16.13.1",
+    "reason-react": "0.8.0",
+    "standard-version": "8.0.2",
+    "styled-components": "4.4.1"
+  }
+}
